@@ -10,8 +10,8 @@ int registrar();
 int iniciarSesion();
 
 int main(void) {
-    iniciarSesion;
-    registrar();
+    iniciarSesion();
+    // registrar();
     
 	return 0;
 }
@@ -40,6 +40,8 @@ int existeUsuario(char user[]) { // Revisa si existe dentro del archivo el usuar
 int registrar() { // Registrar un usuario.
     char user[10], pass[10];
 
+    printf("CREAR USUARIO\n\n");
+
     do {
         if (existeUsuario(user)) // Ejecuta la funcion existeUsuario, mientras la funcion existe usuario sea verdadera
             printf("\nEl usuario \"%s\" ya se encuentra registrado\n", user);
@@ -55,31 +57,44 @@ int registrar() { // Registrar un usuario.
 
 	usuarios=fopen("users.txt", "a");
 	fprintf(usuarios,"%s\t%s\n", user, pass); // Si la funcion exusuario es falsa, imprime el nombre de usuario y contraseña dentro del archivo
+    printf("El usuario \"%s\" ha creado exitosamente con la contraseña \"%s\".\n\n", user, pass);
     fclose(usuarios);
+
+    iniciarSesion();
 
 	return 1;
 }
 
 int iniciarSesion(){
-    char pass[10], user[10], usArch[10], psArch[10];
-    int existe=0;
+    char pass[10], user[10], usArch[10], passArch[10];
+    int correcto=0;
 
-    usuarios=fopen("users.txt", "r");
+    printf("INICIO DE SESION\n\n");
+    printf("Introduce tu nombre de usuario: ");
+    scanf("%s", &user);
+    printf("Introduce tu contraseña: ");
+    scanf("%s", &pass);
 
-    while(!feof(usuarios)) { // Mientras no sea el final del archivo, comparará el usuario proporcionado con los usuarios del archivo
-        fscanf(usuarios,"%s", usArch);
-        if(!strcmp(user, usArch))
-            existe++;
-    }
+    if (existeUsuario(user)) { // Si el usuario introducido exite.
+        usuarios=fopen("users.txt", "r");
 
-    do{
-        while(!feof(usuarios)) { // Mientras no sea el final del archivo, comparará la contraseña proporcionada con las contraeñas del archivo
-            fscanf(usuarios,"%s", psArch);
-            if(!strcmp(pass, psArch))
-                printf("Bienvenido %c",user);
-            else
-                printf("Contraseña incorrecta");
+        while (!feof(usuarios) && !correcto) { // Mientras no se llegue al final del archivo y no coincidan los datos del usuario.
+            fscanf(usuarios, "%s\t%s", usArch, passArch); // Lee usuario y contraseña.
+            if (!strcmp(usArch, user) && !strcmp(passArch, pass)) { // Revisa que coincidan el usuario y su contraseña.
+                printf("Has iniciado sesion");
+                correcto=1;
+            }
         }
-    }while(strcmp(pass, psArch));
-
+        
+        if (!correcto) { // Si no coincidio la contraseña.
+            printf("La contraseña no coincide.\nInténtalo de nuevo.\n\n");
+            iniciarSesion();
+        }
+        
+    } else { // En caso de que no exista el usuario.
+        printf("El usuario \"%s\" no existe, registrate\n\n", user);
+        registrar(); // Se da la opcion de iniciar sesion.
+    }
+    
+    fclose(usuarios);
 }

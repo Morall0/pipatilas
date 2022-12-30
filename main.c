@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <auth.c>
 
 FILE *usuarios; // Declara apuntador tipo FILE
 
@@ -11,12 +10,10 @@ int iniciarSesion();
 
 int main(void) {
     iniciarSesion();
-    // registrar();
-    
 	return 0;
 }
 
-int existeUsuario(char user[]) { // Revisa si existe dentro del archivo el usuario proporcionado.
+int existeUsuario(char user[]) { // Verifica la existencia del usuario.
     char usArch[10];
     int existe=0;
 
@@ -37,7 +34,7 @@ int existeUsuario(char user[]) { // Revisa si existe dentro del archivo el usuar
     return existe;
 }
 
-int registrar() { // Registrar un usuario.
+int registrar() { // Registra usuarios.
     char user[10], pass[10];
 
     printf("CREAR USUARIO\n\n");
@@ -65,7 +62,7 @@ int registrar() { // Registrar un usuario.
 	return 1;
 }
 
-int iniciarSesion(){
+int iniciarSesion() { // Permite iniciar sesion.
     char pass[10], user[10], usArch[10], passArch[10];
     int correcto=0;
 

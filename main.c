@@ -3,14 +3,39 @@
 #include <string.h>
 
 FILE *usuarios; // Declara apuntador tipo FILE
+FILE *menu;
 
+void leeMenu();
 int existeUsuario(char user[]);
 int registrar();
 int iniciarSesion();
 
 int main(void) {
     iniciarSesion();
+    // leeMenu();
 	return 0;
+}
+
+void leeMenu() { // Lee e imprime el menu de un archivo txt.
+    char linea[100];
+    int op;
+
+    menu=fopen("menu.txt", "r");
+
+    if (!menu) {
+        printf("No se encuentra el archivo del menú");
+        return;
+    }
+    
+    system("cls");
+    while (!feof(menu)) {
+        fgets(linea, 100, menu);
+        printf("%s", linea);
+    }
+
+    fclose(menu);
+    printf("\n\tSelecciona la opcion que desees: ");
+    scanf("%i", &op);
 }
 
 int existeUsuario(char user[]) { // Verifica la existencia del usuario.

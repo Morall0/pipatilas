@@ -12,13 +12,14 @@ FILE *menu;
 
 void leeArchivo();
 int existeUsuario(char user[]);
-int registrar();
-int iniciarSesion();
-int inicio();
+void registrar();
+void iniciarSesion();
+void inicio();
+void juego();
 
 int main(void) {
     inicio();
-	return 0;
+    return 0;
 }
 
 
@@ -31,7 +32,6 @@ void leeArchivo(int parte, char arch[]) { // Lee e imprime partes de un archivo.
 
     if (!menu) {
         printf("No se encuentra el archivo del menú\n");
-        return;
     }
     
     system("cls");
@@ -58,7 +58,6 @@ int existeUsuario(char user[]) { // Verifica la existencia del usuario.
     
     if(!usuarios) {
         printf("No existe el archivo \"users.txt\"\n"); // Imprime mensaje en pantalla si el archivo no existe
-        return 0;
     }
     
     while(!feof(usuarios)) { // Mientras no sea el final del archivo, comparará el usuario proporcionado con los usuarios del archivo
@@ -71,7 +70,7 @@ int existeUsuario(char user[]) { // Verifica la existencia del usuario.
     return existe;
 }
 
-int registrar() { // Registra usuarios.
+void registrar() { // Registra usuarios.
     struct user u;
 
     leeArchivo(1, "menu.txt");
@@ -95,10 +94,9 @@ int registrar() { // Registra usuarios.
     usu=u; // Se asignan los datos del usuario al usuario global.
     fclose(usuarios);
 
-	return 1;
 }
 
-int iniciarSesion() { // Permite iniciar sesion.
+void iniciarSesion() { // Permite iniciar sesion.
     struct user u, uArch;
     int correcto=0;
 
@@ -139,7 +137,7 @@ int iniciarSesion() { // Permite iniciar sesion.
     fclose(usuarios);
 }
 
-int inicio() {
+void inicio() {
     int op;
 
     do {
@@ -162,5 +160,4 @@ int inicio() {
         }
     } while(op<1 || op>3); // Se asegura de que se elija una opcion válida.
 
-    return 0;
 }

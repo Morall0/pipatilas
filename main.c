@@ -22,12 +22,12 @@ int main(void) {
 }
 
 
-void leeArchivo(int parte) { // Lee e imprime partes de un archivo.
+void leeArchivo(int parte, char arch[]) { // Lee e imprime partes de un archivo.
     char linea[100];
     int stop=0;
     int parteLeida=0;
 
-    menu=fopen("menu.txt", "r");
+    menu=fopen(arch, "r");
 
     if (!menu) {
         printf("No se encuentra el archivo del menú\n");
@@ -74,7 +74,7 @@ int existeUsuario(char user[]) { // Verifica la existencia del usuario.
 int registrar() { // Registra usuarios.
     struct user u;
 
-    leeArchivo(1);
+    leeArchivo(1, "menu.txt");
 
     printf("\n\n\t\t\tCREAR USUARIO\n\n");
 
@@ -102,7 +102,7 @@ int iniciarSesion() { // Permite iniciar sesion.
     struct user u, uArch;
     int correcto=0;
 
-    leeArchivo(1);
+    leeArchivo(1, "menu.txt");
 
     printf("\n\n\t\t\tINICIO DE SESION\n\n");
     printf("Introduce tu nombre de usuario: ");
@@ -143,7 +143,7 @@ int inicio() {
     int op;
 
     do {
-        leeArchivo(1);
+        leeArchivo(1, "menu.txt");
         printf("\n\n\t\t\t1. Inicio de sesion");
         printf("\n\t\t\t2. Crear usuario");
         printf("\n\t\t\t3. Salir");

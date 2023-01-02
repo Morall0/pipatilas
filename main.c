@@ -114,7 +114,7 @@ int iniciarSesion() { // Permite iniciar sesion.
         }
         
     } else { // En caso de que no exista el usuario.
-        printf("El usuario \"%s\" no existe, registrate\n\n", user);
+        printf("El usuario \"%s\" No existe, registrate\n\n", user);
         registrar(); // Se da la opcion de iniciar sesion.
     }
     

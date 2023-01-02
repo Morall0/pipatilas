@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 
 struct user {
@@ -16,9 +17,10 @@ void registrar();
 void iniciarSesion();
 void menuInicio();
 void menuJuego();
+void juego();
 
 int main(void) {
-    menuInicio();
+    juego();
     return 0;
 }
 
@@ -82,7 +84,7 @@ void registrar() { // Registra usuarios.
             printf("\nEl usuario \"%s\" ya se encuentra registrado\n", u.uname);
         printf("Escribe un nombre de usuario: ");
         scanf("%20s", u.uname);
-        printf("Escribe tu contraseña (max 20 caracteres): ");
+        printf("Escribe tu contrase%ca (max 20 caracteres): ", 164);
         scanf("%20s", u.pass);
     }
     while (existeUsuario(u.uname)); // Vuelve a pedir los datos si el usuario ya estaba registrado.
@@ -105,7 +107,7 @@ void iniciarSesion() { // Permite iniciar sesion.
     printf("\n\n\t\t\tINICIO DE SESION\n\n");
     printf("Introduce tu nombre de usuario: ");
     scanf("%s", &u.uname);
-    printf("Introduce tu contraseña: ");
+    printf("Introduce tu contrase%ca: ", 164);
     scanf("%s", &u.pass);
 
     if (existeUsuario(u.uname)) { // Si el usuario introducido exite.
@@ -121,7 +123,7 @@ void iniciarSesion() { // Permite iniciar sesion.
         }
         
         if (!correcto) { // Si no coincidio la contraseña.
-            printf("La contraseña no coincide.\n\nPresiona ENTER para volver al inicio.");
+            printf("La contrase%ca no coincide.\n\nPresiona ENTER para volver al inicio.", 164);
             menuInicio();
         }
         
@@ -184,4 +186,100 @@ void menuJuego() {
         }
     } while (op<1 || op>3);
     
+}
+
+void juego() {
+    // Las distintas opciones asociadas con un número.
+    srand(time(NULL));
+    int piedra = 1;
+    int papel = 2;
+    int tijera = 3;
+    int lagarto = 4;
+    int spock = 5;
+    char opciones[5][8] = {"Piedra\0", "Papel\0", "Tijeras\0", "Lagarto\0", "Spock\0"};
+
+    // Almacenan las opciones elegidas.
+    int opUs=1; // usuario
+    int opMa = rand()%5 + 1; // maquina (random del 1 al 5)
+
+    leeArchivo(1, "menu.txt");
+    printf("\n\n%cQue eliges?\n1. Piedra\n2. Papel\n3. Tijeras\n4. Lagarto\n5. Spock\n", 168);
+    printf("Tu eleccion: ");
+
+    do {
+        if (opUs<1 || opUs>5)
+            printf("Elige una opcion valida: ");
+        scanf("%i", &opUs);
+    } while (opUs<1 || opUs>5);
+
+    printf("Elegiste %s\n",opciones[opUs-1]);
+    printf("El programa eligio %s\n\n" , opciones[opMa-1]);
+    
+
+    switch (opUs) {
+        case 1: // Piedra
+            if (opMa == piedra)
+                printf ("Empate!\nAmbos eligieron Piedra.");
+            else if (opMa == papel)
+                printf("Perdiste!\nPapel cubre Piedra.");
+            else if (opMa == tijera)
+                printf("Ganaste!\nPiedra aplasta Tijeras.");
+            else if (opMa == lagarto)
+                printf("Ganaste!\nPiedra aplasta Lagarto.");
+            else if (opMa == spock) 
+                printf("Perdiste!\nSpock vaporiza piedra.");
+            break;
+
+        case 2: // Papel
+            if (opMa == piedra)
+                printf("Ganaste!\nPapel cubre Piedra.");
+            else if (opMa == papel)
+                printf ("Empate!\nAmbos eligieron Papel.");
+            else if (opMa == tijera)
+                printf("Perdiste!\nTijeras cortan papel.");
+            else if (opMa == lagarto)
+                printf("Perdiste!\nLagarto come Papel.");
+            else if (opMa == spock)
+                printf("Ganaste!\nPapel desaprueba Spock.");
+            break;
+
+        case 3: // Tijera
+            if(opMa == piedra)
+                printf("Perdiste!\nPiedra aplasta tijeras.");
+            else if(opMa == papel)
+                    printf("Ganaste!\nTijeras cortan Papel.");
+            else if(opMa == tijera)
+                printf("Empate!\nAmbos eligieron Tijeras.");
+            else if(opMa == lagarto)
+                printf("Ganaste!\nTijeras decapitan Lagarto.");
+            else if(opMa == spock)
+                printf("Perdiste!\nSpock destruye Tijeras.");
+            break;
+
+        case 4: // Lagarto
+            if(opMa == piedra)
+                printf("Perdiste!\nPiedra aplasta Lagarto.");
+            else if(opMa == papel)
+                printf("Ganaste!\nLagarto come Papel.");
+            else if(opMa == tijera)
+                printf("Perdiste!\nTijeras decapitan Lagarto.");
+            else if(opMa == lagarto)
+                printf("Empate!\nAmbos eligieron Lagarto.");
+            else if(opMa == spock)
+                printf("Ganaste!\nLagarto envenena Spock.");
+            break;
+
+        case 5: // Spock
+            if (opMa == piedra)
+                printf("Ganaste!\nSpock vaporiza Piedra.");
+            else if (opMa == papel)
+                printf ("Perdiste!\nPapel desaprueba Spock.");
+            else if (opMa == tijera)
+                printf ("Ganaste!\nSpock destruye Tijeras.");
+            else if (opMa == lagarto)
+                printf ("Perdiste!\nLagarto envenena Spock.");
+            else if (opMa == spock)
+                printf("Empate!\nAmbos eligieron Spock");
+            break;
+    }    
 }

@@ -16,7 +16,7 @@
 
           .----------------------------------------.
           |          Inspirado en el juego         |
-          | "Piedra, Papel, Tijera, Lagarto, Spok" |
+          | "Piedra, Papel, Tijera, Lagarto, Spock"|
           |          de The BigBang Theory.        |
           '----------------------------------------'
              _        _   

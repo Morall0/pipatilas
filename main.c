@@ -5,7 +5,7 @@
 struct user {
     char uname[20];
     char pass[20];
-} usu;
+} player;
 
 FILE *usuarios; // Declara apuntador tipo FILE
 FILE *menu;
@@ -14,14 +14,13 @@ void leeArchivo();
 int existeUsuario(char user[]);
 void registrar();
 void iniciarSesion();
-void inicio();
-void juego();
+void menuInicio();
+void menuJuego();
 
 int main(void) {
-    inicio();
+    menuInicio();
     return 0;
 }
-
 
 void leeArchivo(int parte, char arch[]) { // Lee e imprime partes de un archivo.
     char linea[100];
@@ -90,8 +89,9 @@ void registrar() { // Registra usuarios.
 
 	usuarios=fopen("users.txt", "a");
 	fprintf(usuarios,"%s\t%s\n", u.uname, u.pass); // Si la funcion exusuario es falsa, imprime el nombre de usuario y contraseña dentro del archivo
-    printf("El usuario \"%s\" se ha creado exitosamente con la contraseña \"%s\".\n", u.uname, u.pass);
-    usu=u; // Se asignan los datos del usuario al usuario global.
+    //printf("El usuario \"%s\" se ha creado exitosamente con la contraseña \"%s\".\n", u.uname, u.pass);
+    player=u; // Se asignan los datos del usuario al usuario global.
+    menuJuego();
     fclose(usuarios);
 
 }
@@ -114,30 +114,26 @@ void iniciarSesion() { // Permite iniciar sesion.
         while (!feof(usuarios) && !correcto) { // Mientras no se llegue al final del archivo y no coincidan los datos del usuario.
             fscanf(usuarios, "%s\t%s", uArch.uname, uArch.pass); // Lee usuario y contraseña.
             if (!strcmp(uArch.uname, u.uname) && !strcmp(uArch.pass, u.pass)) { // Revisa que coincidan el usuario y su contraseña.
-                printf("Has iniciado sesion");
                 correcto=1;
-                usu=u; // Se asignan los datos del usuario al usuario global.
+                player=u; // Se asignan los datos del usuario al usuario global.
+                menuJuego();
             }
         }
         
         if (!correcto) { // Si no coincidio la contraseña.
             printf("La contraseña no coincide.\n\nPresiona ENTER para volver al inicio.");
-            fflush(stdin); // Limpia el buffer para que no haya error con getchar.
-            getchar();
-            inicio();
+            menuInicio();
         }
         
     } else { // En caso de que no exista el usuario.
         printf("El usuario \"%s\" no existe.\n\nPresiona ENTER para volver al inicio.", u.uname);
-        fflush(stdin); // Limpia el buffer para que no haya error con getchar.
-        getchar();
-        inicio();
+        menuInicio();
     }
     
     fclose(usuarios);
 }
 
-void inicio() {
+void menuInicio() {
     int op;
 
     do {
@@ -160,4 +156,32 @@ void inicio() {
         }
     } while(op<1 || op>3); // Se asegura de que se elija una opcion válida.
 
+}
+
+void menuJuego() {
+    int op=1;
+    do {
+        leeArchivo(2, "menu.txt");
+
+        printf("\n\nBienvenido %s, elige una opcion", player.uname);
+        if (op<1 || op>3) 
+            printf(" VALIDA: ");
+        else
+            printf(": ");
+
+        scanf("%i", &op);
+
+        switch (op) {
+            case 1:
+                printf("Jugar");
+                break;
+            case 2:
+                printf("Scores");
+                break;
+            case 3:
+                printf("Salir");
+                break;
+        }
+    } while (op<1 || op>3);
+    
 }

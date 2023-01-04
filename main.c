@@ -17,9 +17,10 @@ void leeArchivo();
 int existeUsuario(char user[]);
 void registrar();
 void iniciarSesion();
+void actPuntos();
+void menuScore();
 void menuInicio();
 void menuJuego();
-void actPuntos();
 void juego();
 
 int main(void) {
@@ -157,6 +158,50 @@ void iniciarSesion() { // Permite iniciar sesion.
     }
 }
 
+void actPuntos() {
+    FILE *tmp; // Archivo temporal en el que se reescriben los usuarios.
+    struct user usArch;
+
+    usuarios=fopen("users.txt", "r");
+    tmp=fopen("users.tmp", "w");
+
+    // Va leyendo del archivo de usuarios y lo imprime en el temporal.
+    while (!feof(usuarios)) {
+        fscanf(usuarios, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, &usArch.pjugadas, &usArch.pganadas, &usArch.pperdidas);
+
+        if (strcmp(usArch.uname, player.uname)) {
+            if (usArch.uname) 
+                fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, usArch.pjugadas, usArch.pganadas, usArch.pperdidas);
+        } else if (!strcmp(usArch.uname, player.uname)) // Cuando llega al usuario, imprime la info actualizada.
+            fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", player.uname, player.pass, player.pjugadas, player.pganadas, player.pperdidas);
+    }
+
+    fclose(usuarios);
+    fclose(tmp);
+
+    
+    remove("users.txt"); // Se elimina el archivo con la informacion vieja.
+    rename("users.tmp", "users.txt"); // Se cambia el nombre del archivo temporal al nombre del archivo original.
+
+}
+
+void menuScore() {
+    leeArchivo(1, "menu.txt");
+    printf("\n\t\t\t---- SCORE ----\n\n");
+    printf("\t\t       Jugador: %s\n", player.uname);
+    printf("   .------------------.------------------.-------------------.\n");
+    printf("   | Partidas jugadas | Partidas ganadas | Partidas perdidas |\n");
+    printf("   |------------------|------------------|-------------------|\n");
+    printf("   |       %3i        |       %3i        |       %3i         |\n", player.pjugadas, player.pganadas, player.pperdidas);
+    printf("   '------------------'------------------'-------------------'\n");
+
+    fflush(stdin);
+    printf("\n\n\t\tPresiona ENTER para volver al menu. ");
+    getchar();
+    system("cls");
+    menuJuego();
+}
+
 void menuInicio() {
     int op;
 
@@ -203,7 +248,7 @@ void menuJuego() {
                 juego();
                 break;
             case 2:
-                printf("Scores");
+                menuScore();
                 break;
             case 3:
                 system("cls");
@@ -211,35 +256,6 @@ void menuJuego() {
         }
     } while (op<1 || op>3);
     
-}
-
-// TODO: Crear funcion que despliegue el score.
-
-void actPuntos() {
-    FILE *tmp; // Archivo temporal en el que se reescriben los usuarios.
-    struct user usArch;
-
-    usuarios=fopen("users.txt", "r");
-    tmp=fopen("users.tmp", "w");
-
-    // Va leyendo del archivo de usuarios y lo imprime en el temporal.
-    while (!feof(usuarios)) {
-        fscanf(usuarios, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, &usArch.pjugadas, &usArch.pganadas, &usArch.pperdidas);
-
-        if (strcmp(usArch.uname, player.uname)) {
-            if (usArch.uname) 
-                fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, usArch.pjugadas, usArch.pganadas, usArch.pperdidas);
-        } else if (!strcmp(usArch.uname, player.uname)) // Cuando llega al usuario, imprime la info actualizada.
-            fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", player.uname, player.pass, player.pjugadas, player.pganadas, player.pperdidas);
-    }
-
-    fclose(usuarios);
-    fclose(tmp);
-
-    
-    remove("users.txt"); // Se elimina el archivo con la informacion vieja.
-    rename("users.tmp", "users.txt"); // Se cambia el nombre del archivo temporal al nombre del archivo original.
-
 }
 
 void juego() {

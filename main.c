@@ -6,7 +6,9 @@
 struct user {
     char uname[20];
     char pass[20];
-    // TODO: agregar partidas jugadas y ganadas.
+    int pjugadas;
+    int pganadas;
+    int pperdidas;
 } player;
 
 FILE *usuarios; // Declara apuntador tipo FILE
@@ -17,6 +19,7 @@ void registrar();
 void iniciarSesion();
 void menuInicio();
 void menuJuego();
+void actPuntos();
 void juego();
 
 int main(void) {
@@ -76,6 +79,11 @@ int existeUsuario(char user[]) { // Verifica la existencia del usuario.
 void registrar() { // Registra usuarios.
     struct user u;
 
+    // Inicializando en 0 el registro de partidas.
+    u.pjugadas=0; 
+    u.pganadas=0;
+    u.pperdidas=0;
+
     leeArchivo(1, "menu.txt");
 
     printf("\n\n\t\t\tCREAR USUARIO\n\n");
@@ -91,38 +99,40 @@ void registrar() { // Registra usuarios.
     }
     while (existeUsuario(u.uname)); // Vuelve a pedir los datos si el usuario ya estaba registrado.
 
+    // Se registra el usuario al archivo.
 	usuarios=fopen("users.txt", "a");
-	fprintf(usuarios,"%s\t%s\n", u.uname, u.pass); // Si la funcion exusuario es falsa, imprime el nombre de usuario y contraseña dentro del archivo
-    //printf("El usuario \"%s\" se ha creado exitosamente con la contraseña \"%s\".\n", u.uname, u.pass);
+	fprintf(usuarios,"%s\t%s\t%i\t%i\t%i\n", u.uname, u.pass, u.pjugadas, u.pganadas, u.pperdidas); // Si la funcion exusuario es falsa, imprime el nombre de usuario y contraseña dentro del archivo.
+    fclose(usuarios);
+    
     player=u; // Se asignan los datos del usuario al usuario global.
-    // TODO: inicializar en 0 las partidas jugadas y ganadas.
+
     system("cls");
     menuJuego();
-    fclose(usuarios);
-
 }
 
 void iniciarSesion() { // Permite iniciar sesion.
-    struct user u, uArch;
+    struct user uArch;
+    char uname[20];
+    char pass[20];
     int correcto=0;
 
     leeArchivo(1, "menu.txt");
 
     printf("\n\n\t\t\tINICIO DE SESION\n\n");
     printf("Introduce tu nombre de usuario: ");
-    scanf("%s", &u.uname);
+    scanf("%s", uname);
     printf("Introduce tu contrase%ca: ", 164);
-    scanf("%s", &u.pass);
+    scanf("%s", pass);
 
-    if (existeUsuario(u.uname)) { // Si el usuario introducido exite.
+    if (existeUsuario(uname)) { // Si el usuario introducido exite.
         usuarios=fopen("users.txt", "r");
 
         while (!feof(usuarios) && !correcto) { // Mientras no se llegue al final del archivo y no coincidan los datos del usuario.
-            fscanf(usuarios, "%s\t%s", uArch.uname, uArch.pass); // Lee usuario y contraseña.
-            if (!strcmp(uArch.uname, u.uname) && !strcmp(uArch.pass, u.pass)) { // Revisa que coincidan el usuario y su contraseña.
+            fscanf(usuarios, "%s\t%s\t%i\t%i\t%i\n", uArch.uname, uArch.pass, &uArch.pjugadas, &uArch.pganadas, &uArch.pperdidas); // Lee usuario y contraseña.
+            if (!strcmp(uArch.uname, uname) && !strcmp(uArch.pass, pass)) { // Revisa que coincidan el usuario y su contraseña.
                 correcto=1;
-                player=u; // Se asignan los datos del usuario al usuario global.
-                //TODO: asignar registro de las partidas.
+                player=uArch; // Se asignan los datos del usuario al usuario global.
+                fclose(usuarios);
                 system("cls");
                 menuJuego();
             }
@@ -132,19 +142,19 @@ void iniciarSesion() { // Permite iniciar sesion.
             printf("La contrase%ca no coincide.\n\nPresiona ENTER para volver al inicio.", 164);
             fflush(stdin); // Limpia el buffer para que no falle getchar.
             getchar();
+            fclose(usuarios);
             system("cls");
             menuInicio();
         }
         
     } else { // En caso de que no exista el usuario.
-        printf("El usuario \"%s\" no existe.\n\nPresiona ENTER para volver al inicio.", u.uname);
+        printf("El usuario \"%s\" no existe.\n\nPresiona ENTER para volver al inicio.", uname);
         fflush(stdin); // Limpia el buffer para que no falle getchar.
         getchar();
+        fclose(usuarios);
         system("cls");
         menuInicio();
     }
-    
-    fclose(usuarios);
 }
 
 void menuInicio() {
@@ -201,6 +211,35 @@ void menuJuego() {
         }
     } while (op<1 || op>3);
     
+}
+
+// TODO: Crear funcion que despliegue el score.
+
+void actPuntos() {
+    FILE *tmp; // Archivo temporal en el que se reescriben los usuarios.
+    struct user usArch;
+
+    usuarios=fopen("users.txt", "r");
+    tmp=fopen("users.tmp", "w");
+
+    // Va leyendo del archivo de usuarios y lo imprime en el temporal.
+    while (!feof(usuarios)) {
+        fscanf(usuarios, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, &usArch.pjugadas, &usArch.pganadas, &usArch.pperdidas);
+
+        if (strcmp(usArch.uname, player.uname)) {
+            if (usArch.uname) 
+                fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", usArch.uname, usArch.pass, usArch.pjugadas, usArch.pganadas, usArch.pperdidas);
+        } else if (!strcmp(usArch.uname, player.uname)) // Cuando llega al usuario, imprime la info actualizada.
+            fprintf(tmp, "%s\t%s\t%i\t%i\t%i\n", player.uname, player.pass, player.pjugadas, player.pganadas, player.pperdidas);
+    }
+
+    fclose(usuarios);
+    fclose(tmp);
+
+    
+    remove("users.txt"); // Se elimina el archivo con la informacion vieja.
+    rename("users.tmp", "users.txt"); // Se cambia el nombre del archivo temporal al nombre del archivo original.
+
 }
 
 void juego() {
@@ -352,11 +391,15 @@ void juego() {
         } while(victoria[0]<3 && victoria[1]<3);
         
         if(victoria[0]==3) {
-            // TODO: Agregar las partidas jugadas, ganadas y perdidas al player (perdidas con resta).
+            player.pjugadas++;
+            player.pganadas++;
+            actPuntos();
             system("cls");
             leeArchivo(6, "manos.txt");
         } else{
-            // TODO: Agregar las partidas jugadas, ganadas y perdidas al player (perdidas con resta).
+            player.pjugadas++;
+            player.pperdidas++;
+            actPuntos();
             system("cls");
             leeArchivo(7, "manos.txt");
         }

@@ -31,7 +31,7 @@ int main(void) {
 
 void leeArchivo(int parte, char arch[]) { // Lee e imprime partes de un archivo.
     FILE *archivo;
-    char linea[100];
+    char *linea=(char*)malloc(sizeof(char)*200);
     int stop=0;
     int parteLeida=0;
 
@@ -54,11 +54,13 @@ void leeArchivo(int parte, char arch[]) { // Lee e imprime partes de un archivo.
         }
     }
 
+    free(linea);
+
     fclose(archivo);
 }
 
 int existeUsuario(char user[]) { // Verifica la existencia del usuario.
-    char uArch[20];
+    char *uArch=(char*)malloc(sizeof(char)*20);
     int existe=0;
 
     usuarios=fopen("users.txt", "r");
@@ -72,6 +74,8 @@ int existeUsuario(char user[]) { // Verifica la existencia del usuario.
         if(!strcmp(user, uArch))
             existe++;
     }
+
+    free(uArch);
 
     fclose(usuarios);
     return existe;
@@ -113,17 +117,17 @@ void registrar() { // Registra usuarios.
 
 void iniciarSesion() { // Permite iniciar sesion.
     struct user uArch;
-    char uname[20];
-    char pass[20];
+    char *uname=(char*)malloc(sizeof(char)*20);
+    char *pass=(char*)malloc(sizeof(char)*20);
     int correcto=0;
 
     leeArchivo(1, "menu.txt");
 
     printf("\n\n\t\t\tINICIO DE SESION\n\n");
     printf("Introduce tu nombre de usuario: ");
-    scanf("%s", uname);
+    scanf("%20s", uname);
     printf("Introduce tu contrase%ca: ", 164);
-    scanf("%s", pass);
+    scanf("%20s", pass);
 
     if (existeUsuario(uname)) { // Si el usuario introducido exite.
         usuarios=fopen("users.txt", "r");
@@ -132,6 +136,8 @@ void iniciarSesion() { // Permite iniciar sesion.
             fscanf(usuarios, "%s\t%s\t%i\t%i\t%i\n", uArch.uname, uArch.pass, &uArch.pjugadas, &uArch.pganadas, &uArch.pperdidas); // Lee usuario y contraseña.
             if (!strcmp(uArch.uname, uname) && !strcmp(uArch.pass, pass)) { // Revisa que coincidan el usuario y su contraseña.
                 correcto=1;
+                free(pass);
+                free(uname);
                 player=uArch; // Se asignan los datos del usuario al usuario global.
                 fclose(usuarios);
                 system("cls");
@@ -141,6 +147,8 @@ void iniciarSesion() { // Permite iniciar sesion.
         
         if (!correcto) { // Si no coincidio la contraseña.
             printf("La contrase%ca no coincide.\n\nPresiona ENTER para volver al inicio.", 164);
+            free(pass);
+            free(uname);
             fflush(stdin); // Limpia el buffer para que no falle getchar.
             getchar();
             fclose(usuarios);
@@ -150,6 +158,8 @@ void iniciarSesion() { // Permite iniciar sesion.
         
     } else { // En caso de que no exista el usuario.
         printf("El usuario \"%s\" no existe.\n\nPresiona ENTER para volver al inicio.", uname);
+        free(pass);
+        free(uname);
         fflush(stdin); // Limpia el buffer para que no falle getchar.
         getchar();
         fclose(usuarios);
@@ -182,7 +192,6 @@ void actPuntos() {
     
     remove("users.txt"); // Se elimina el archivo con la informacion vieja.
     rename("users.tmp", "users.txt"); // Se cambia el nombre del archivo temporal al nombre del archivo original.
-
 }
 
 void menuScore() {
